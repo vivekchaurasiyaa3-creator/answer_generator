@@ -1,0 +1,8 @@
+langchain
+langgraph
+faiss-cpu
+sentence-transformers
+transformers
+huggingface-hub
+openai
+tiktoken
