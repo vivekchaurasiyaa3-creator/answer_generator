@@ -19,7 +19,7 @@ def create_workflow():
     graph.add_node("retriever", retriever)
     graph.add_node("analyzer", analyzer)
     graph.add_node("generator", generator)
-    graph.add_node("critic", critic)
+    graph.add_node("critic", critic) 
 
     graph.add_edge("retriever", "analyzer")
     graph.add_edge("analyzer", "generator")
