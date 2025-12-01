@@ -1,33 +1,18 @@
-from langchain_community.document_loaders import DirectoryLoader
-from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
-import json
+from langchain.document_loaders import DirectoryLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
 
-def retriever(query, kb_dir="./kb", k=4, model_name="all-MiniLM-L6-v2"):
-    loader = DirectoryLoader(kb_dir, glob="**/*.txt")
+def retriever(state):
+    loader = DirectoryLoader("./kb")
     docs = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     chunks = splitter.split_documents(docs)
 
-    embeddings = HuggingFaceEmbeddings(model_name=model_name)
-    db = FAISS.from_documents(chunks, embeddings)
+    emb = HuggingFaceEmbeddings()
+    db = FAISS.from_documents(chunks, emb)
 
-    results = db.similarity_search(query, k=k)
+    results = db.similarity_search(state["query"], k=4)
+    return {"retrieved": results}
 
-    output = []
-    for r in results:
-        output.append({
-            "content": r.page_content,
-            "metadata": r.metadata
-        })
-
-    return {"retrieved": output}
-
-if __name__ == "__main__":
-    print(json.dumps(
-        retriever("what is ai?"),
-        indent=2,
-        ensure_ascii=False
-    ))
